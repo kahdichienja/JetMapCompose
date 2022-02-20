@@ -124,7 +124,7 @@ fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
         },
         onMapClick = {
             Log.d(TAG, "Coordinate clicked: $it")
-            _makerList.add(it)
+            pos2.add(it)
             pos = it
         },
         onPOIClick = {
@@ -141,7 +141,8 @@ fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
             Marker(
                 position = posistion,
                 title = "Singapore ",
-                snippet = "Marker in Singapore ${posistion.latitude}, ${posistion.longitude}"
+                snippet = "Marker in Singapore ${posistion.latitude}, ${posistion.longitude}",
+                onClick = markerClick
             )
         }
 
