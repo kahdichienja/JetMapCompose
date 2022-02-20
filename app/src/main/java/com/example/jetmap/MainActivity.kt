@@ -8,7 +8,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
@@ -22,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.jetmap.ui.theme.JetMapTheme
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -29,6 +32,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.compose.*
+import com.google.maps.android.compose.Polyline
 
 private const val TAG = "MainActivityMap"
 
@@ -75,11 +79,18 @@ class MainActivity : ComponentActivity() {
 fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
     val singapore = LatLng(1.35, 103.87)
     val singapore2 = LatLng(1.40, 103.77)
+    var pos by remember {
+        mutableStateOf(LatLng(singapore.latitude, singapore.longitude))
+    }
 
     val _makerList: MutableList<LatLng> =   mutableListOf<LatLng>()
 
     _makerList.add(singapore)
     _makerList.add(singapore2)
+
+    var pos2 by remember {
+        mutableStateOf(_makerList)
+    }
 
 
     val cameraPositionState = rememberCameraPositionState {
@@ -113,6 +124,8 @@ fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
         },
         onMapClick = {
             Log.d(TAG, "Coordinate clicked: $it")
+            _makerList.add(it)
+            pos = it
         },
         onPOIClick = {
             Log.d(TAG, "POI clicked: ${it.name}")
@@ -123,7 +136,7 @@ fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
             Log.d(TAG, "${it.title} was clicked")
             false
         }
-        _makerList.forEach { posistion ->
+        pos2.forEach { posistion ->
 
             Marker(
                 position = posistion,
@@ -131,17 +144,27 @@ fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
                 snippet = "Marker in Singapore ${posistion.latitude}, ${posistion.longitude}"
             )
         }
+
+        Polyline(points = _makerList, onClick = {
+            Log.d(TAG, "${it.points} was clicked")
+        })
 //        Marker(
 //            position = singapore2,
 //            title = "Singapore",
 //            snippet = "Marker in Singapore"
 //        )
-        Circle(
-            center = singapore,
-            fillColor = MaterialTheme.colors.secondary,
-            strokeColor = MaterialTheme.colors.secondaryVariant,
-            radius = 1000.0,
-        )
+//        Circle(
+//            center = singapore,
+//            fillColor = MaterialTheme.colors.secondary,
+//            strokeColor = MaterialTheme.colors.secondaryVariant,
+//            radius = 1000.0,
+//        )
+
+    }
+    Column(modifier = Modifier.padding(10.dp))
+    {
+        Text(text = "Map Coord ${pos.toString()}")
+
     }
 
 
