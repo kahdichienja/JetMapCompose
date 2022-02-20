@@ -7,6 +7,11 @@ import retrofit2.http.GET
 interface UserApi {
     @GET("/users")
     suspend fun getUsers(): List<UserInfoDto>
+
+
+    companion object {
+        const val BASE_URL = "https://jsonplaceholder.typicode.com/"
+    }
 //    suspend fun getDirection(
 //        @Path("origin") origin: String,
 //        @Path("destination") destination: String,
