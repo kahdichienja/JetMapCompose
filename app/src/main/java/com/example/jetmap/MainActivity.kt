@@ -7,22 +7,26 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.jetmap.ui.theme.JetMapTheme
@@ -83,6 +87,9 @@ fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
         mutableStateOf(LatLng(singapore.latitude, singapore.longitude))
     }
 
+    var poi by remember {
+        mutableStateOf("")
+    }
     val _makerList: MutableList<LatLng> =   mutableListOf<LatLng>()
 
     _makerList.add(singapore)
@@ -105,8 +112,6 @@ fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
             MapUiSettings(compassEnabled = false)
         )
     }
-    var shouldAnimateZoom by remember { mutableStateOf(true) }
-    var ticker by remember { mutableStateOf(0) }
 
     GoogleMap(
         modifier = modifier,
@@ -129,6 +134,7 @@ fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
         },
         onPOIClick = {
             Log.d(TAG, "POI clicked: ${it.name}")
+            poi = it.name
         }
     ){
         // Drawing on the map is accomplished with a child-based API
@@ -142,7 +148,8 @@ fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
                 position = posistion,
                 title = "Singapore ",
                 snippet = "Marker in Singapore ${posistion.latitude}, ${posistion.longitude}",
-                onClick = markerClick
+                onClick = markerClick,
+                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
             )
         }
 
@@ -164,17 +171,60 @@ fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
     }
     Column(modifier = Modifier.padding(10.dp))
     {
-        Text(text = "Map Coord ${pos.toString()}")
-
+        CustomNaveBar(poi=poi)
     }
 
 
 }
 
+@Composable
+fun CustomNaveBar(poi: String?){
+    Row(modifier = Modifier.height(10.dp)) {
+        Spacer(modifier = Modifier.height(10.dp))
+    }
+    Card(
+        Modifier
+            .height(75.dp)
+            .fillMaxWidth()
+            .padding(top = 5.dp, end = 5.dp, start = 5.dp), elevation = 4.dp, shape = RoundedCornerShape(10.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 5.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            IconButton(
+                onClick = {},
+                modifier = Modifier.padding(start = 4.dp)
+            ){
+                Icon(Icons.Filled.Menu,contentDescription = "menu",modifier = Modifier.fillMaxHeight())
+            }
+            Text(text = poi ?: "Search...", modifier = Modifier.padding(top = 15.dp), maxLines = 1, overflow = TextOverflow.Ellipsis)
+            IconButton(
+                onClick = {}
+            ) {
+                Image(
+                    painterResource(id = R.drawable.ic_baseline_person_outline_24),
+                    contentDescription = " ",
+                    contentScale = ContentScale.Crop,            // crop the image if it's not a square
+                    modifier = Modifier
+                        .height(40.dp)
+                        .width(40.dp)
+                        .clip(CircleShape)                       // clip to the circle shape
+                        .border(2.dp, Color.Cyan, CircleShape)
+                        .padding(4.dp)
+                        .fillMaxHeight()
+                )
+            }
+        }
+    }
+}
+
+
+
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     JetMapTheme {
-        GoogleMapView(modifier = Modifier.fillMaxSize(),  onMapLoaded = {})
+        CustomNaveBar(poi = null)
     }
 }

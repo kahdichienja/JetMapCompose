@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">JetMap</string>
-    <string name="MAPS_API_KEY">AIzaSyATvGupJuSMMUWtl5Gairx6RllmPp_s2mQ</string>
+    <string name="MAPS_API_KEY"></string>
 </resources>
