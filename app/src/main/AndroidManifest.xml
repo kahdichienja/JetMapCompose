@@ -11,7 +11,7 @@
         android:theme="@style/Theme.JetMap">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="${MAPS_API_KEY}" />
+            android:value="@string/MAPS_API_KEY" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
