@@ -16,11 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -29,6 +25,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.jetmap.featur_typicode_users.presentation.UserInfoViewModel
 import com.example.jetmap.ui.theme.JetMapTheme
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -37,9 +35,12 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.compose.*
 import com.google.maps.android.compose.Polyline
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 
 private const val TAG = "MainActivityMap"
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,30 +48,48 @@ class MainActivity : ComponentActivity() {
             var isMapLoaded by remember { mutableStateOf(false) }
             JetMapTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    GoogleMapView(
-                        modifier = Modifier.fillMaxSize(),
-                        onMapLoaded = {
-                            isMapLoaded = true
+                val usersInfoViewModel: UserInfoViewModel = hiltViewModel()
+                val usersInfoState = usersInfoViewModel.usersInfoState.value
+                val scaffoldState = rememberScaffoldState()
+
+
+                LaunchedEffect(key1 = true){
+                    usersInfoViewModel.evenFlow.collectLatest { event ->
+                        when(event){
+                            is UserInfoViewModel.UIEvent.ShowSnackBar ->{
+                                scaffoldState.snackbarHostState.showSnackbar(
+                                    message = event.message
+                                )
+                            }
                         }
-                    )
-                    
-                    if(!isMapLoaded){
-                        AnimatedVisibility(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                            visible = !isMapLoaded,
-                            enter = EnterTransition.None,
-                            exit = fadeOut()
-                        ) {
-                            CircularProgressIndicator(
+                    }
+                }
+                Scaffold(scaffoldState = scaffoldState) {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colors.background
+                    ) {
+                        GoogleMapView(
+                            modifier = Modifier.fillMaxSize(),
+                            onMapLoaded = {
+                                isMapLoaded = true
+                            }
+                        )
+
+                        if(!isMapLoaded){
+                            AnimatedVisibility(
                                 modifier = Modifier
-                                    .background(MaterialTheme.colors.background)
-                                    .wrapContentSize()
-                            )
+                                    .fillMaxSize(),
+                                visible = !isMapLoaded,
+                                enter = EnterTransition.None,
+                                exit = fadeOut()
+                            ) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier
+                                        .background(MaterialTheme.colors.background)
+                                        .wrapContentSize()
+                                )
+                            }
                         }
                     }
                 }

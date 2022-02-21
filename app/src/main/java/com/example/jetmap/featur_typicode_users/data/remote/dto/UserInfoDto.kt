@@ -4,8 +4,8 @@ import com.example.jetmap.featur_typicode_users.data.local.entity.UserInfoEntity
 import com.example.jetmap.featur_typicode_users.domain.model.UserInfo
 
 data class UserInfoDto(
-    val address: AddressDto,
-    val company: CompanyDto,
+//    val address: AddressDto,
+//    val company: CompanyDto,
     val email: String,
     val id: Int,
     val name: String,
@@ -15,8 +15,8 @@ data class UserInfoDto(
 ){
     fun toUserInfoEntity(): UserInfoEntity{
         return UserInfoEntity(
-            address= address.toAddress(),
-            company = company.toCompany(),
+//            address= address.toAddress(),
+//            company = company.toCompany(),
             email = email,
             id =id,
             name=name,

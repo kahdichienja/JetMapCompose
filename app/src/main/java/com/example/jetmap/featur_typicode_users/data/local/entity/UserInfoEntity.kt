@@ -14,8 +14,8 @@ data class UserInfoEntity(
     val phone: String,
     val username: String,
     val website: String,
-    val address: Address,
-    val company: Company,
+//    val address: Address,
+//    val company: Company,
 ){
     fun toUserInfo(): UserInfo{
         return UserInfo(
@@ -25,8 +25,8 @@ data class UserInfoEntity(
             username = username,
             website = website,
             phone = phone,
-            company = company,
-            address = address,
+//            company = company,
+//            address = address,
         )
     }
 }
