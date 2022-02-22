@@ -10,7 +10,9 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -21,11 +23,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.jetmap.featur_typicode_users.domain.model.UserInfo
 import com.example.jetmap.featur_typicode_users.presentation.UserInfoViewModel
 import com.example.jetmap.ui.theme.JetMapTheme
 import com.google.android.gms.maps.GoogleMapOptions
@@ -52,7 +56,6 @@ class MainActivity : ComponentActivity() {
                 val usersInfoState = usersInfoViewModel.usersInfoState.value
                 val scaffoldState = rememberScaffoldState()
 
-
                 LaunchedEffect(key1 = true){
                     usersInfoViewModel.evenFlow.collectLatest { event ->
                         when(event){
@@ -73,7 +76,8 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.fillMaxSize(),
                             onMapLoaded = {
                                 isMapLoaded = true
-                            }
+                            },
+                            users = usersInfoState.usersInfo
                         )
 
                         if(!isMapLoaded){
@@ -99,7 +103,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
+fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit, users:  List<UserInfo>) {
     val singapore = LatLng(1.35, 103.87)
     val singapore2 = LatLng(1.40, 103.77)
     var pos by remember {
@@ -191,11 +195,45 @@ fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
     Column(modifier = Modifier.padding(10.dp))
     {
         CustomNaveBar(poi=poi)
+        Spacer(modifier = Modifier.height(LocalConfiguration.current.screenWidthDp.dp))
+        LazyRow {
+            items(count = users.size) { user ->
+                UserInfoRow(user = users[user], onItemClicked = {} )
+            }
+        }
     }
 
 
-}
 
+}
+/**
+ * Stateless composable that displays a full-width [UserInfo].
+ *
+ * @param UserInfo item to show
+ * @param modifier modifier for this element
+ */
+@Composable
+fun UserInfoRow(
+    user: UserInfo,
+    onItemClicked: (UserInfo) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        modifier = modifier
+            .clickable { onItemClicked(user) }
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .height(500.dp)
+            .width(LocalConfiguration.current.screenWidthDp.dp - 90.dp),
+    ) {
+        Column(modifier.padding(10.dp))  {
+            Text(user.name)
+            Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(user.email)
+                Text(user.website)
+            }
+        }
+    }
+}
 @Composable
 fun CustomNaveBar(poi: String?){
     Row(modifier = Modifier.height(10.dp)) {
@@ -243,7 +281,15 @@ fun CustomNaveBar(poi: String?){
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
+    val users: List<UserInfo> = listOf<UserInfo>(
+        UserInfo(name = "John Doe", email = "uer@g.net", phone = "123124", username = "User Name", website = "", id = 1),
+        UserInfo(name = "John Doe", email = "uer@g.net", phone = "123124", username = "User Name", website = "", id = 1),
+        UserInfo(name = "John Doe", email = "uer@g.net", phone = "123124", username = "User Name", website = "", id = 1)
+    )
     JetMapTheme {
-        CustomNaveBar(poi = null)
+        users.map { user ->
+            UserInfoRow(user = user, onItemClicked = {} )
+        }
+
     }
 }

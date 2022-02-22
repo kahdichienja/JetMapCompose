@@ -49,6 +49,7 @@ class UserInfoViewModel @Inject constructor(private val getUsersInfo: GetUsersIn
                             usersInfo = res.data ?: emptyList(),
                             isLoading = true
                         )
+                        _eventFlow.emit(UIEvent.ShowSnackBar(message = "Loading ..."))
                     }
                 }
             }.launchIn(this)

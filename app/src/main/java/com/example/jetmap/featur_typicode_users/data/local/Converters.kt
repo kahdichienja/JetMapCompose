@@ -2,9 +2,9 @@ package com.example.jetmap.featur_typicode_users.data.local
 
 import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
-import com.example.jetmap.featur_typicode_users.data.util.JsonParser
-import com.example.jetmap.featur_typicode_users.domain.model.UserInfo
 import com.google.gson.reflect.TypeToken
+import com.example.jetmap.featur_typicode_users.domain.model.UserInfo
+import com.example.jetmap.featur_typicode_users.data.util.JsonParser
 
 
 @ProvidedTypeConverter

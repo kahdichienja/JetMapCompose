@@ -2,14 +2,15 @@ package com.example.jetmap.featur_typicode_users.di
 
 import android.app.Application
 import androidx.room.Room
-import com.example.jetmap.featur_typicode_users.data.local.UserInfoDao
+import com.google.gson.Gson
+import com.example.jetmap.featur_typicode_users.data.local.Converters
 import com.example.jetmap.featur_typicode_users.data.local.UserInfoDatabase
 import com.example.jetmap.featur_typicode_users.data.remote.UserApi
 import com.example.jetmap.featur_typicode_users.data.repository.UserInfoRepositoryImplementation
 import com.example.jetmap.featur_typicode_users.data.util.GsonParser
 import com.example.jetmap.featur_typicode_users.domain.repository.UserInfoRepository
+
 import com.example.jetmap.featur_typicode_users.domain.use_case.GetUsersInfo
-import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,13 +37,11 @@ object UserInfoModule {
 
     @Provides
     @Singleton
-    fun provideUserInfoDatabase(app: Application): UserInfoDatabase{
+    fun provideUserInfoDatabase(app: Application): UserInfoDatabase {
         return Room.databaseBuilder(
-            app,
-            UserInfoDatabase::class.java,
-            "users"
+            app, UserInfoDatabase::class.java, "users"
         )
-            .addTypeConverter(GsonParser(Gson()))
+//            .addTypeConverter(Converters(GsonParser(Gson())))
             .build()
     }
 
