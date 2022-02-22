@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.jetmap.featur_typicode_users.domain.model.UserInfo
 import com.example.jetmap.featur_typicode_users.presentation.UserInfoViewModel
+import com.example.jetmap.feature_google_places.presentation.GooglePlacesInfoViewModel
 import com.example.jetmap.ui.theme.JetMapTheme
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -56,6 +57,10 @@ class MainActivity : ComponentActivity() {
                 val usersInfoState = usersInfoViewModel.usersInfoState.value
                 val scaffoldState = rememberScaffoldState()
 
+                val glaces: GooglePlacesInfoViewModel = hiltViewModel()
+                val gPlaceInfoState = glaces.googlePlacesInfoState.value
+
+
                 LaunchedEffect(key1 = true){
                     usersInfoViewModel.evenFlow.collectLatest { event ->
                         when(event){
@@ -77,7 +82,8 @@ class MainActivity : ComponentActivity() {
                             onMapLoaded = {
                                 isMapLoaded = true
                             },
-                            users = usersInfoState.usersInfo
+                            users = usersInfoState.usersInfo,
+                            googlePlacesInfoViewModel = glaces
                         )
 
                         if(!isMapLoaded){
@@ -103,12 +109,22 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit, users:  List<UserInfo>) {
+fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit, users:  List<UserInfo>, googlePlacesInfoViewModel:GooglePlacesInfoViewModel) {
     val singapore = LatLng(1.35, 103.87)
     val singapore2 = LatLng(1.40, 103.77)
+    googlePlacesInfoViewModel.getDirection(
+        origin = "${singapore.latitude}, ${singapore.longitude}",
+        destination = "${singapore2.latitude}, ${singapore2.longitude}",
+        key = ""
+    )
     var pos by remember {
         mutableStateOf(LatLng(singapore.latitude, singapore.longitude))
     }
+
+    val gPlaceInfoState = googlePlacesInfoViewModel.googlePlacesInfoState.value
+
+
+    Log.d(TAG, "POLYLINE:  ${gPlaceInfoState.direction?.routes?.get(0)?.overview_polyline?.points}")
 
     var poi by remember {
         mutableStateOf("")
