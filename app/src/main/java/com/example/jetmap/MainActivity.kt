@@ -43,7 +43,7 @@ import com.google.maps.android.compose.Polyline
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
-private const val TAG = "MainActivityMap"
+const val TAG = "MainActivityMap"
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -62,6 +62,15 @@ class MainActivity : ComponentActivity() {
 
 
                 LaunchedEffect(key1 = true){
+                    glaces.evenFlow.collectLatest { event ->
+                        when(event){
+                            is GooglePlacesInfoViewModel.UIEvent.ShowSnackBar ->{
+                                scaffoldState.snackbarHostState.showSnackbar(
+                                    message = event.message
+                                )
+                            }
+                        }
+                    }
                     usersInfoViewModel.evenFlow.collectLatest { event ->
                         when(event){
                             is UserInfoViewModel.UIEvent.ShowSnackBar ->{
@@ -112,19 +121,13 @@ class MainActivity : ComponentActivity() {
 fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit, users:  List<UserInfo>, googlePlacesInfoViewModel:GooglePlacesInfoViewModel) {
     val singapore = LatLng(1.35, 103.87)
     val singapore2 = LatLng(1.40, 103.77)
-    googlePlacesInfoViewModel.getDirection(
-        origin = "${singapore.latitude}, ${singapore.longitude}",
-        destination = "${singapore2.latitude}, ${singapore2.longitude}",
-        key = ""
-    )
+
     var pos by remember {
         mutableStateOf(LatLng(singapore.latitude, singapore.longitude))
     }
 
-    val gPlaceInfoState = googlePlacesInfoViewModel.googlePlacesInfoState.value
 
 
-    Log.d(TAG, "POLYLINE:  ${gPlaceInfoState.direction?.routes?.get(0)?.overview_polyline?.points}")
 
     var poi by remember {
         mutableStateOf("")
@@ -137,7 +140,6 @@ fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit, users:  List<User
     var pos2 by remember {
         mutableStateOf(_makerList)
     }
-
 
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(singapore, 11f)
@@ -174,6 +176,18 @@ fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit, users:  List<User
         onPOIClick = {
             Log.d(TAG, "POI clicked: ${it.name}")
             poi = it.name
+//            it.latLng.latitude
+
+            googlePlacesInfoViewModel.getDirection(
+                origin = "${singapore.latitude}, ${singapore.longitude}",
+                destination = "${it.latLng.latitude}, ${it.latLng.longitude}",
+                key = ""
+            )
+
+//            val gPlaceInfoState = googlePlacesInfoViewModel.googlePlacesInfoState.value
+
+
+
         }
     ){
         // Drawing on the map is accomplished with a child-based API
