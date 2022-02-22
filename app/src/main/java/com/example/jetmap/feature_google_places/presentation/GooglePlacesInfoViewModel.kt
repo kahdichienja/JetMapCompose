@@ -41,11 +41,11 @@ class GooglePlacesInfoViewModel @Inject constructor(private val getDirectionInfo
                             isLoading = false
                         )
                         _eventFlow.emit(UIEvent.ShowSnackBar(message = "Direction Loaded"))
-                        _eventFlow.emit(
-                            UIEvent.ShowSnackBar(
-                            message = googlePlacesInfoState.value.direction?.routes?.get(0)?.overview_polyline?.points.toString()
-                            )
-                        )
+//                        _eventFlow.emit(
+//                            UIEvent.ShowSnackBar(
+//                            message = googlePlacesInfoState.value.direction?.routes?.get(0)?.overview_polyline?.points.toString()
+//                            )
+//                        )
                         googlePlacesInfoState.value.direction?.routes?.get(0)?.overview_polyline?.points?.let { decoPoints(points = it) }
                         Log.d(TAG, "POLYLINE:  ${googlePlacesInfoState.value.direction?.routes?.get(0)?.overview_polyline?.points}")
                     }

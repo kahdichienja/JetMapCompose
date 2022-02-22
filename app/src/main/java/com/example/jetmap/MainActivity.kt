@@ -1,5 +1,6 @@
 package com.example.jetmap
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -117,6 +118,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit, users:  List<UserInfo>, googlePlacesInfoViewModel:GooglePlacesInfoViewModel) {
     val singapore = LatLng(1.35, 103.87)
@@ -206,7 +208,7 @@ fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit, users:  List<User
             )
         }
 
-        Polyline(points = _makerList, onClick = {
+        Polyline(points = googlePlacesInfoViewModel.polyLinesPoints.value, onClick = {
             Log.d(TAG, "${it.points} was clicked")
         })
 //        Marker(
