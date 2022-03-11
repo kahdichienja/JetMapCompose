@@ -183,7 +183,7 @@ fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit, users:  List<User
             googlePlacesInfoViewModel.getDirection(
                 origin = "${singapore.latitude}, ${singapore.longitude}",
                 destination = "${it.latLng.latitude}, ${it.latLng.longitude}",
-                key = ""
+                key = MapKey.KEY
             )
 
 //            val gPlaceInfoState = googlePlacesInfoViewModel.googlePlacesInfoState.value
@@ -224,16 +224,16 @@ fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit, users:  List<User
 //        )
 
     }
-    Column(modifier = Modifier.padding(10.dp))
-    {
-        CustomNaveBar(poi=poi)
-        Spacer(modifier = Modifier.height(LocalConfiguration.current.screenWidthDp.dp))
-        LazyRow {
-            items(count = users.size) { user ->
-                UserInfoRow(user = users[user], onItemClicked = {} )
-            }
-        }
-    }
+//    Column(modifier = Modifier.padding(10.dp))
+//    {
+//        CustomNaveBar(poi=poi)
+//        Spacer(modifier = Modifier.height(LocalConfiguration.current.screenWidthDp.dp))
+//        LazyRow {
+//            items(count = users.size) { user ->
+//                UserInfoRow(user = users[user], onItemClicked = {} )
+//            }
+//        }
+//    }
 
 
 
